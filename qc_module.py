@@ -1,7 +1,9 @@
 #quantum_computation_module
-from math import comb, ceil, log2   
+from math import comb, ceil, log2, sqrt, pi
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, transpile
 from qiskit.circuit.library.arithmetic.adders import CDKMRippleCarryAdder
+import numpy as np
+import math
 
 def bits_needed(max_value: int) -> int:
     return max(1, ceil(log2(max_value+1)))
@@ -92,3 +94,12 @@ def steady_state_linear_oqw(omega:float, N: int):
     else: 
         return [1/N]*N    
     return prob_list
+
+
+def erf_approximation(x):
+    x = np.asarray(x)
+    return np.piecewise(
+        x,
+        [x >= 3/2, x <= -3/2],
+        [1, -1, lambda x: 2/3 * x]
+    )
