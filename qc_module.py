@@ -4,6 +4,7 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, transpile
 from qiskit.circuit.library.arithmetic.adders import CDKMRippleCarryAdder
 import numpy as np
 import math
+from scipy.special import erf
 
 def bits_needed(max_value: int) -> int:
     return max(1, ceil(log2(max_value+1)))
@@ -103,3 +104,20 @@ def erf_approximation(x):
         [x >= 3/2, x <= -3/2],
         [1, -1, lambda x: 2/3 * x]
     )
+
+
+def S_G(N,omega,t):
+    v = 2*omega - 1
+    part_one = np.log(2*pi*t)/(4*np.sqrt(2*pi)) * ( 1 + erf( (N-v*t)/(2*np.sqrt(t)) ) )
+    part_two = -(1/(2*np.sqrt(2*pi))) * (N-v*t)/(np.sqrt(t)) * np.exp( -(N-v*t)**2/(2*t) )
+    part_three = 1/4 * ( erf( (N-v*t)/(np.sqrt(2*t)) ) - np.sqrt(pi/2))
+    result = part_one + part_two + part_three
+    return result
+
+
+def S_corrected(N,omega,t):
+    v = 2*omega - 1 
+    s_g = S_G(N,omega,t)
+    s_ss = - 1/2 * (1 - erf( (N-v*t)/np.sqrt(2*t) )) * np.log(1/2 * (1 - erf( (N-v*t)/np.sqrt(2*t) )))
+    s_total = s_g + s_ss
+    return s_total
