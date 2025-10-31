@@ -115,10 +115,32 @@ def S_G(N,omega,t):
     return result
 
 
+def S_G_corrected(N,omega,t):
+    v = 2*omega - 1
+    return 0.5 * ((1 + np.log(2 * np.pi * t)) * 0.5 * (1 + erf((N - v * t) / np.sqrt(2 * t))) - (N - v * t) / np.sqrt(t) / np.sqrt(2 * np.pi) * np.exp(-((N - v * t)**2) / (2 * t)))
+
+
 def S_corrected(N,omega,t):
-    v = 2*omega - 1 
-    s_g = S_G(N,omega,t)
-    s_ss = - 1/2 * (1 - erf( (N-v*t)/np.sqrt(2*t) )) * np.log(1/2 * (1 - erf( (N-v*t)/np.sqrt(2*t) )))
+    v = 2*omega - 1
+    a = omega / (1 - omega)
+    Z = (a**N-1)/(a-1)
+
+    p_tot_ss = 1/2 * (1 - erf( (N-v*t)/np.sqrt(2*t) ))
+
+    p_ss = []
+    p0 = p_tot_ss / Z
+
+    for m in range(N):
+        p_ss.append(p0 * a**m)
+
+    s_ss = 0
+
+    for m in range(N):
+        s_ss += - p_ss[m] * np.log(p_ss[m] + 1e-15)
+    
+
+    s_g = S_G_corrected(N,omega,t)
+
     s_total = s_g + s_ss
     return s_total
 
