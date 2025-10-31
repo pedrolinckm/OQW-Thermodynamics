@@ -108,9 +108,9 @@ def erf_approximation(x):
 
 def S_G(N,omega,t):
     v = 2*omega - 1
-    part_one = np.log(2*pi*t)/(4*np.sqrt(2*pi)) * ( 1 + erf( (N-v*t)/(2*np.sqrt(t)) ) )
+    part_one = np.log(2*pi*t)/(4*np.sqrt(2*pi)) * ( 1 + erf( (N-v*t)/(np.sqrt(2*t)) ) )
     part_two = -(1/(2*np.sqrt(2*pi))) * (N-v*t)/(np.sqrt(t)) * np.exp( -(N-v*t)**2/(2*t) )
-    part_three = 1/4 * ( erf( (N-v*t)/(np.sqrt(2*t)) ) - np.sqrt(pi/2))
+    part_three = 1/(2*np.sqrt(2*pi)) * ( erf( (N-v*t)/(np.sqrt(2*t)) ) + np.sqrt(pi/2))
     result = part_one + part_two + part_three
     return result
 
