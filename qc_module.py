@@ -121,3 +121,31 @@ def S_corrected(N,omega,t):
     s_ss = - 1/2 * (1 - erf( (N-v*t)/np.sqrt(2*t) )) * np.log(1/2 * (1 - erf( (N-v*t)/np.sqrt(2*t) )))
     s_total = s_g + s_ss
     return s_total
+
+
+def Prob(N,omega,t):
+    # Compute P[m, n] recursively
+    # Initialize P array
+    P = np.zeros((N, t+1))
+    # Set initial condition
+    P[0, 0] = 1
+
+    lambd = 1 - omega
+
+    for n in range(1, t+1):
+        for m in range(N):
+            if m == 0:
+                P[m, n] = lambd * (P[m, n-1] + P[m+1, n-1])
+            elif m == N - 1:
+                P[m, n] = omega * (P[m, n-1] + P[m-1, n-1])
+            else:
+                P[m, n] = omega * P[m-1, n-1] + lambd * P[m+1, n-1]
+    return P
+
+
+def S_entropy(N,omega,t):
+    prob_list = Prob(N,omega,t)
+    S = 0
+    for m in range(N):
+        S += - prob_list[m, t] * np.log(prob_list[m, t] + 1e-15)
+    return S
