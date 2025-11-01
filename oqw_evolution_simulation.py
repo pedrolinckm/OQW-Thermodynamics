@@ -11,12 +11,12 @@ import matplotlib.font_manager as fm
 #plt.rcParams['font.family'] = 'serif'
 
 #OQW parameters
-omega = 0.9  
+omega = 0.7  
 lambd = 1 - omega
 a = omega / lambd
 
 # Define N (size of graph) and Nmax (number of steps)
-N = 300   # Maximum value of m
+N = 100   # Maximum value of m
 Nmax = 400  # Maximum value of n
 
 # Initialize P array
@@ -37,7 +37,7 @@ for n in range(1, Nmax+1):
 
 
 plt.figure(figsize=(10, 6))
-for n in range(100, Nmax+1, 50):
+for n in range(50, Nmax+1, 50):
     plt.plot(range(N), P[:, n], marker='o', label=f'n={n}')
 plt.xlabel('m')
 plt.ylabel('P(m, n)')
