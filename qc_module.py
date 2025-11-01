@@ -171,3 +171,14 @@ def S_entropy(N,omega,t):
     for m in range(N):
         S += - prob_list[m, t] * np.log(prob_list[m, t] + 1e-15)
     return S
+
+
+def t_start(N,omega):
+    v = 2*omega - 1
+    t_start = ( (np.sqrt(1+v*N)-1)/v )**2
+    return t_start
+
+def t_end(N,omega):
+    v = 2*omega - 1
+    t_start = ( (np.sqrt(1+v*N)+1)/v )**2
+    return t_start
