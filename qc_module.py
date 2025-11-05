@@ -106,6 +106,11 @@ def erf_approximation(x):
     )
 
 
+def mean_energy(N,omega, epsilon):
+    beta =  -np.log(omega/(1-omega)) / epsilon
+    E = epsilon/(np.exp(beta * epsilon)-1) - N * epsilon / (np.exp(N * beta * epsilon)-1)
+    return E
+
 def S_G(N,omega,t):
     v = 2*omega - 1
     part_one = np.log(2*pi*t)/(4*np.sqrt(2*pi)) * ( 1 + erf( (N-v*t)/(np.sqrt(2*t)) ) )
