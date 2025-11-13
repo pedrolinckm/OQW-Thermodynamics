@@ -111,6 +111,13 @@ def mean_energy(N,omega, epsilon):
     E = epsilon/(np.exp(beta * epsilon)-1) - N * epsilon / (np.exp(N * beta * epsilon)-1)
     return E
 
+def standart_deviation_energy(N,omega,epsilon):
+    beta = -np.log(omega/(1-omega)) / epsilon
+    var_E = (epsilon**2 * np.exp(beta * epsilon)) / (np.exp(beta * epsilon)-1)**2 - (N**2 * epsilon**2 * np.exp(N * beta * epsilon)) / (np.exp(N * beta * epsilon)-1)**2
+    std_E = np.sqrt(var_E)
+    return std_E
+
+
 def S_G(N,omega,t):
     v = 2*omega - 1
     part_one = np.log(2*pi*t)/(4*np.sqrt(2*pi)) * ( 1 + erf( (N-v*t)/(np.sqrt(2*t)) ) )
@@ -187,3 +194,25 @@ def t_end(N,omega):
     v = 2*omega - 1
     t_start = ( (np.sqrt(1+v*N)+1)/v )**2
     return t_start
+
+
+def S_a_2(N,omega,t):
+        v = 2*omega - 1
+        a = omega / (1 - omega)
+        p_tot_ss = 1/2 * (1 - erf( (N-v*t)/np.sqrt(2*t) ))
+        p_ss = []
+        n1 = math.floor( mean_energy(N,omega,1) - standart_deviation_energy(N,omega,1) )
+        n2 = math.ceil( mean_energy(N,omega,1) + standart_deviation_energy(N,omega,1) ) 
+        Z1 = (a**(n2-n1) - 1)/(a-1)
+
+        p0 = p_tot_ss / Z1
+
+        for m in range(n2-n1):
+            p_ss.append(p0 * a**m)
+        S_ss = 0
+        for m in range(n2-n1):
+            S_ss += - p_ss[m] * np.log(p_ss[m] + 1e-15)
+        s_g = S_G_corrected(N,omega,t)
+        s_total = s_g + S_ss
+        return s_total
+
