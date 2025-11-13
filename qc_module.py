@@ -201,8 +201,8 @@ def S_a_2(N,omega,t):
         a = omega / (1 - omega)
         p_tot_ss = 1/2 * (1 - erf( (N-v*t)/np.sqrt(2*t) ))
         p_ss = []
-        n1 = math.floor( mean_energy(N,omega,1) - standart_deviation_energy(N,omega,1) )
-        n2 = math.ceil( mean_energy(N,omega,1) + standart_deviation_energy(N,omega,1) ) 
+        n1 = 0
+        n2 = N
         Z1 = (a**(n2-n1) - 1)/(a-1)
 
         p0 = p_tot_ss / Z1
@@ -212,7 +212,7 @@ def S_a_2(N,omega,t):
         S_ss = 0
         for m in range(n2-n1):
             S_ss += - p_ss[m] * np.log(p_ss[m] + 1e-15)
-        s_g = S_G_corrected(N,omega,t)
+        s_g = S_G_corrected(mean_energy(N,omega,1)-2*standart_deviation_energy(N,omega,1),omega,t)
         s_total = s_g + S_ss
         return s_total
 
