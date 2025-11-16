@@ -177,6 +177,20 @@ def Prob(N,omega,t):
     return P
 
 
+def Prob_approximation(N,omega,x,t):
+    v = 2*omega - 1
+    P = 0
+    if x < N - 2*standart_deviation_energy(N,omega,1)*t:
+        P = 1/np.sqrt(2*pi*t) * np.exp( - (x - v*t)**2 / (2*t) )
+    else:
+        N1 = N - 2*standart_deviation_energy(N,omega,1)*t
+        a = omega / (1 - omega)
+        Z = (a**N-1)/(a-1)
+        p_ss = a**x / Z
+        P = 1/2 * (1 - erf( (N1-v*t)/np.sqrt(2*t) )) * p_ss
+    return P
+
+
 def S_entropy(N,omega,t):
     prob_list = Prob(N,omega,t)
     S = 0
