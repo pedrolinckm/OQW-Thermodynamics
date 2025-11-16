@@ -1,4 +1,4 @@
-#quantum_computation_module
+#oqw_module.py
 from math import comb, ceil, log2, sqrt, pi
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, transpile
 from qiskit.circuit.library.arithmetic.adders import CDKMRippleCarryAdder
@@ -6,85 +6,12 @@ import numpy as np
 import math
 from scipy.special import erf
 
-def bits_needed(max_value: int) -> int:
-    return max(1, ceil(log2(max_value+1)))
-
-def bits_big_endian(x: int, width: int):
-    bit_list = [(x >> i) & 1 for i in range(width)]
-    bit_list.reverse()
-    return bit_list
-
-def bits_little_endian(x: int, width: int):
-    bit_list = [(x >> i) & 1 for i in range(width)]
-    return bit_list
-
-
-def add_controls_equal(circ: QuantumCircuit, a_reg, value_bits, *, big_endian=True):
-    n = len(a_reg)
-
-    reg_qubits = list(a_reg) if big_endian else list(a_reg)[::-1]
-
-    flips = []
-    for qb, bit in zip(reg_qubits, value_bits):
-        if bit == 0:
-            circ.x(qb)
-            flips.append(qb)
-
-    def unflip():
-        for qb in flips:
-            circ.x(qb)
-
-    return unflip
-
-def quantum_sum_gate(n):
-    cin = QuantumRegister(1,'cin')
-    cout = QuantumRegister(1,'cout')
-    a = QuantumRegister(n,'a')
-    b = QuantumRegister(n,'b')
-    qc = QuantumCircuit(cin,a,b,cout)
-    for k in range(n//2):
-        qc.swap(a[k], a[n - 1 - k])
-        qc.swap(b[k], b[n - 1 - k])
-
-    qc = qc.compose(CDKMRippleCarryAdder(num_state_qubits=n))
-    for k in range(n//2):
-        qc.swap(a[k], a[n - 1 - k])
-        qc.swap(b[k], b[n - 1 - k])
-    return qc
-
-
-def quantum_sub_gate(n: int):
-    qin   = QuantumRegister(1,  "qin")
-    qA    = QuantumRegister(n,  "A")
-    qB    = QuantumRegister(n,  "B")
-    qout  = QuantumRegister(1,  "qout")
-    qc = QuantumCircuit(qin, qA, qB, qout, name=f"QSUB_{n}")
-
-    # ~A e cin' = 1 - bin
-    for i in range(n):
-        qc.x(qA[i])
-    qc.x(qin[0])
-
-    # soma: (qin, A, B, qout) — aceita Gate/Instruction/Circuit
-    sum_op = quantum_sum_gate(n)
-    try:
-        sum_inst = sum_op.to_instruction()  # se for QuantumCircuit
-    except AttributeError:
-        sum_inst = sum_op                   # se já for Gate/Instruction
-    qc.append(sum_inst, [qin[0], *qA, *qB, qout[0]])
-
-    # restaurar entradas externas
-    for i in range(n):
-        qc.x(qA[i])
-    qc.x(qin[0])
-
-    # borrow_out = NOT(carry_out)
-    qc.x(qout[0])
-    
-    return qc.to_instruction()
-
 
 def steady_state_linear_oqw(omega:float, N: int):
+    '''
+    Function that computes the steady state probabilities for a linear open quantum walk with N nodes and coin parameter omega.
+    Returns a list of probabilities for each node.
+    '''
     if omega != 0.5:
         prob_list = []
         a = omega / (1 - omega)
@@ -98,6 +25,12 @@ def steady_state_linear_oqw(omega:float, N: int):
 
 
 def erf_approximation(x):
+    '''
+    Approximation of the error function using piecewise linear functions.
+    1 for x >= 3/2
+    -1 for x <= -3/2
+    (2/3)x for -3/2 < x < 3/2
+    '''
     x = np.asarray(x)
     return np.piecewise(
         x,
@@ -107,11 +40,17 @@ def erf_approximation(x):
 
 
 def mean_energy(N,omega, epsilon):
+    '''
+    Mean energy of the system.
+    '''
     beta =  -np.log(omega/(1-omega)) / epsilon
     E = epsilon/(np.exp(beta * epsilon)-1) - N * epsilon / (np.exp(N * beta * epsilon)-1)
     return E
 
 def standart_deviation_energy(N,omega,epsilon):
+    '''
+    Standard deviation of the energy of the system.
+    '''
     beta = -np.log(omega/(1-omega)) / epsilon
     var_E = (epsilon**2 * np.exp(beta * epsilon)) / (np.exp(beta * epsilon)-1)**2 - (N**2 * epsilon**2 * np.exp(N * beta * epsilon)) / (np.exp(N * beta * epsilon)-1)**2
     std_E = np.sqrt(var_E)
@@ -119,6 +58,9 @@ def standart_deviation_energy(N,omega,epsilon):
 
 
 def S_G(N,omega,t):
+    '''
+    Entropy of the Gaussian part of the distribution.
+    '''
     v = 2*omega - 1
     part_one = np.log(2*pi*t)/(4*np.sqrt(2*pi)) * ( 1 + erf( (N-v*t)/(np.sqrt(2*t)) ) )
     part_two = -(1/(2*np.sqrt(2*pi))) * (N-v*t)/(np.sqrt(t)) * np.exp( -(N-v*t)**2/(2*t) )
@@ -128,11 +70,17 @@ def S_G(N,omega,t):
 
 
 def S_G_corrected(N,omega,t):
+    '''
+    Corrected entropy of the Gaussian part of the distribution.
+    '''
     v = 2*omega - 1
     return 0.5 * ((1 + np.log(2 * np.pi * t)) * 0.5 * (1 + erf((N - v * t) / np.sqrt(2 * t))) - (N - v * t) / np.sqrt(t) / np.sqrt(2 * np.pi) * np.exp(-((N - v * t)**2) / (2 * t)))
 
 
 def S_corrected(N,omega,t):
+    '''
+    Corrected total entropy of the system.
+    '''
     v = 2*omega - 1
     a = omega / (1 - omega)
     Z = (a**N-1)/(a-1)
@@ -158,10 +106,11 @@ def S_corrected(N,omega,t):
 
 
 def Prob(N,omega,t):
-    # Compute P[m, n] recursively
-    # Initialize P array
+    '''
+    Function that computes the probability distribution P[m,n] of an open quantum walk on a line with N nodes,
+    coin parameter omega, after t time steps.'''
+
     P = np.zeros((N, t+1))
-    # Set initial condition
     P[0, 0] = 1
 
     lambd = 1 - omega
@@ -177,21 +126,43 @@ def Prob(N,omega,t):
     return P
 
 
-def Prob_approximation(N,omega,x,t):
+def Prob_approximation(N, omega, x, t):
+    """
+    Approximate probability distribution P(x,t) of an open quantum walk on a line
+    with N nodes, coin parameter omega, at position x after t time steps.
+    """
     v = 2*omega - 1
-    P = 0
-    if x < N - 2*standart_deviation_energy(N,omega,1)*t:
-        P = 1/np.sqrt(2*pi*t) * np.exp( - (x - v*t)**2 / (2*t) )
+    a = omega / (1 - omega)
+
+    # Standard deviation and cutoff
+    std = standart_deviation_energy(N, omega, 1)
+    N_cut = N - 2*std  # use Gaussian for x < N - 2*std
+
+    # Geometric tail normalization (as in your code)
+    n1 = 0
+    n2 = N
+    Z1 = (a**(n2 - n1) - 1) / (a - 1)  # sum_{k=n1}^{n2-1} a^k
+
+    p_tot_ss = 0.5 * (1 - erf(((mean_energy(N, omega, 1) - 2*std) - v*t) / np.sqrt(2*t)))
+    p0 = p_tot_ss / Z1  # base factor so that sum tail = p_tot_ss
+
+    # Piecewise definition: Gaussian for x < N_cut, geometric tail for x >= N_cut
+    if x < N_cut:
+        p_g = 1 / np.sqrt(2 * pi * t) * np.exp(-(x - v*t)**2 / (2*t))
+        p_ss = 0.0
     else:
-        N1 = N - 2*standart_deviation_energy(N,omega,1)*t
-        a = omega / (1 - omega)
-        Z = (a**N-1)/(a-1)
-        p_ss = a**x / Z
-        P = 1/2 * (1 - erf( (N1-v*t)/np.sqrt(2*t) )) * p_ss
+        p_g = 0.0
+        # geometric part ~ a^x (with normalization via p0)
+        p_ss = p0 * a**(x - n1)
+
+    P = p_g + p_ss
     return P
 
-
 def S_entropy(N,omega,t):
+    '''
+    Function that computes the entropy S(t) of an open quantum walk on a line with N nodes,
+    coin parameter omega, after t time steps.
+    '''
     prob_list = Prob(N,omega,t)
     S = 0
     for m in range(N):
@@ -200,33 +171,93 @@ def S_entropy(N,omega,t):
 
 
 def t_start(N,omega):
+    '''
+    Function that computes the starting time t_start for the approximation of the entropy.
+    '''
     v = 2*omega - 1
     t_start = ( (np.sqrt(1+v*N)-1)/v )**2
     return t_start
 
 def t_end(N,omega):
+    '''
+    Function that computes the ending time t_end for the approximation of the entropy.
+    '''
     v = 2*omega - 1
     t_start = ( (np.sqrt(1+v*N)+1)/v )**2
     return t_start
 
 
-def S_a_2(N,omega,t):
+def S_a_2(N, omega, t):
+    """
+    Approximate entropy S(t) as:
+      - Gaussian contribution for m < N_cut
+      - Steady-state (geometric) contribution for m >= N_cut
+
+    k_sigma controls how far from N we place the cut in units of std_dev_energy:
+        N_cut = N - k_sigma * std_dev_energy
+    Increasing k_sigma pushes the cut further to the left,
+    making the steady-state start earlier and reducing the region
+    where both approximations would be 'valid' (conceptual overlap).
+    """
+    # Parameters
+    v = 2*omega - 1
+    a = omega / (1 - omega)
+    std = standart_deviation_energy(N, omega, 1)
+
+    # Cut position for splitting Gaussian and steady state
+    N_cut_float = N - 3 * std
+    N_cut = int(np.floor(N_cut_float))
+    N_cut = max(0, min(N, N_cut))  # keep in [0, N]
+
+    # --- 1) Tail mass according to Gaussian approximation ---
+    # p_tot_ss = prob mass in the tail m >= N_cut
+    # (using CLT-style Gaussian approximation)
+    p_tot_ss = 0.5 * (1 - erf((N_cut - v*t) / np.sqrt(2*t)))
+
+    # --- 2) Steady-state (geometric) distribution on m = N_cut,...,N-1 ---
+    if abs(a - 1.0) < 1e-14:
+        # Special case a ≈ 1: flat steady state in the tail
+        Z_tail = N - N_cut
+    else:
+        # sum_{m=N_cut}^{N-1} a^m = a^{N_cut} * (a^{N-N_cut} - 1)/(a - 1)
+        Z_tail = a**N_cut * (a**(N - N_cut) - 1) / (a - 1)
+
+    # This factor makes the sum of p_ss over the tail equal to p_tot_ss
+    p0 = p_tot_ss / Z_tail
+
+    # Entropy of steady-state tail
+    S_ss = 0.0
+    for m in range(N_cut, N):
+        p = p0 * a**m       # sub-normalized probability in the tail
+        S_ss += -p * np.log(p + 1e-15)
+
+    # --- 3) Gaussian part on m = 0,...,N_cut-1 ---
+    S_g = 0.0
+    for m in range(0, N_cut):
+        p = 1 / np.sqrt(2 * pi * t) * np.exp(-(m - v*t)**2 / (2*t))
+        S_g += -p * np.log(p + 1e-15)
+
+    # --- 4) Total entropy: supports are disjoint, so entropies add ---
+    S_total = S_g + S_ss
+    return S_total
+
+def S_a_3(N,omega,t):
+        '''
+        Approximate entropy S(t) using the steady state distribution for m >= N - 2*std_dev_energy.
+        '''
         v = 2*omega - 1
         a = omega / (1 - omega)
         p_tot_ss = 1/2 * (1 - erf( (N-v*t)/np.sqrt(2*t) ))
         p_ss = []
-        n1 = 0
-        n2 = N
-        Z1 = (a**(n2-n1) - 1)/(a-1)
+        Z1 = (a**(N) - 1)/np.log(a)
 
         p0 = p_tot_ss / Z1
 
-        for m in range(n2-n1):
+        for m in range(N):
             p_ss.append(p0 * a**m)
         S_ss = 0
-        for m in range(n2-n1):
+        for m in range(N):
             S_ss += - p_ss[m] * np.log(p_ss[m] + 1e-15)
         s_g = S_G_corrected(mean_energy(N,omega,1)-2*standart_deviation_energy(N,omega,1),omega,t)
         s_total = s_g + S_ss
         return s_total
-
