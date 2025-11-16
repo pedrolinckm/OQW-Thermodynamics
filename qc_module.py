@@ -241,3 +241,14 @@ def S_a_3(N,omega,t):
         s_g = S_G_corrected(mean_energy(N,omega,1)-2*standart_deviation_energy(N,omega,1),omega,t)
         s_total = s_g + S_ss
         return s_total
+
+
+def mean_energy_evolution(N,omega,epsilon,t):
+    '''
+    Mean energy evolution <E>(t) of the system.
+    '''
+    prob_list = Prob(N,omega,t)
+    E = 0
+    for m in range(N):
+        E +=  prob_list[m, t] * epsilon * m
+    return E
