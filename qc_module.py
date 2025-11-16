@@ -189,55 +189,35 @@ def t_end(N,omega):
 
 def S_a_2(N, omega, t):
     """
-    Approximate entropy S(t) as:
-      - Gaussian contribution for m < N_cut
-      - Steady-state (geometric) contribution for m >= N_cut
-
-    k_sigma controls how far from N we place the cut in units of std_dev_energy:
-        N_cut = N - k_sigma * std_dev_energy
-    Increasing k_sigma pushes the cut further to the left,
-    making the steady-state start earlier and reducing the region
-    where both approximations would be 'valid' (conceptual overlap).
+    Approximate entropy S(t) using a Gaussian for m < N_cut and steady-state distribution for m >= N_cut.
     """
-    # Parameters
     v = 2*omega - 1
     a = omega / (1 - omega)
     std = standart_deviation_energy(N, omega, 1)
 
-    # Cut position for splitting Gaussian and steady state
     N_cut_float = N - 3 * std
     N_cut = int(np.floor(N_cut_float))
-    N_cut = max(0, min(N, N_cut))  # keep in [0, N]
+    N_cut = max(0, min(N, N_cut))
 
-    # --- 1) Tail mass according to Gaussian approximation ---
-    # p_tot_ss = prob mass in the tail m >= N_cut
-    # (using CLT-style Gaussian approximation)
     p_tot_ss = 0.5 * (1 - erf((N_cut - v*t) / np.sqrt(2*t)))
 
-    # --- 2) Steady-state (geometric) distribution on m = N_cut,...,N-1 ---
     if abs(a - 1.0) < 1e-14:
-        # Special case a ≈ 1: flat steady state in the tail
         Z_tail = N - N_cut
     else:
-        # sum_{m=N_cut}^{N-1} a^m = a^{N_cut} * (a^{N-N_cut} - 1)/(a - 1)
         Z_tail = a**N_cut * (a**(N - N_cut) - 1) / (a - 1)
 
-    # This factor makes the sum of p_ss over the tail equal to p_tot_ss
     p0 = p_tot_ss / Z_tail
 
-    # Entropy of steady-state tail
     S_ss = 0.0
     for m in range(N_cut, N):
-        p = p0 * a**m       # sub-normalized probability in the tail
+        p = p0 * a**m      
         S_ss += -p * np.log(p + 1e-15)
 
-    # --- 3) Gaussian part on m = 0,...,N_cut-1 ---
     S_g = 0.0
     for m in range(0, N_cut):
         p = 1 / np.sqrt(2 * pi * t) * np.exp(-(m - v*t)**2 / (2*t))
         S_g += -p * np.log(p + 1e-15)
 
-    # --- 4) Total entropy: supports are disjoint, so entropies add ---
     S_total = S_g + S_ss
     return S_total
 
