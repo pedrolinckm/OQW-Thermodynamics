@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib import rc
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
+import math
 #font_path = '/home/pedro-linck/Downloads/times.ttf'  # Update this path if necessary
 #font_prop = fm.FontProperties(fname=font_path)
 
@@ -43,6 +44,12 @@ plt.xlabel('m', fontsize=18)
 plt.ylabel('P(m, n)', fontsize=18)
 plt.legend(fontsize = 15)
 plt.grid(True)
+
+
+integer_ticks = range(0, N)
+
+plt.xticks(integer_ticks)
+
 
 plt.savefig('P_vs_m_for_selected_n.png')    
 
