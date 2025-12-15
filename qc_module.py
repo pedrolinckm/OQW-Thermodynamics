@@ -215,4 +215,3 @@ def S_a_2(N,omega,t):
         s_g = S_G_corrected(mean_energy(N,omega,1)-2*standart_deviation_energy(N,omega,1),omega,t)
         s_total = s_g + S_ss
         return s_total
-
