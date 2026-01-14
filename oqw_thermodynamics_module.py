@@ -6,7 +6,9 @@ from scipy.special import erf
 
 
 def steady_state_linear_oqw(omega:float, N: int):
-    '''Returns the steady state probability distribution for linear OQW with given omega and N'''
+    '''
+    Returns the steady state probability distribution for linear OQW with given omega and N
+    '''
     if omega != 0.5:
         prob_list = []
         a = omega / (1 - omega)
@@ -19,17 +21,10 @@ def steady_state_linear_oqw(omega:float, N: int):
     return prob_list
 
 
-def erf_approximation(x):
-    x = np.asarray(x)
-    return np.piecewise(
-        x,
-        [x >= 3/2, x <= -3/2],
-        [1, -1, lambda x: 2/3 * x]
-    )
-
-
 def mean_energy(N,omega, epsilon):
-    '''Returns the mean energy for linear OQW with given omega, N and epsilon'''
+    '''
+    Returns the mean energy for linear OQW with given omega, N and epsilon
+    '''
     beta =  -np.log(omega/(1-omega)) / epsilon
     E = epsilon/(np.exp(beta * epsilon)-1) - N * epsilon / (np.exp(N * beta * epsilon)-1)
     return E
@@ -43,7 +38,8 @@ def standart_deviation_energy(N,omega,epsilon):
 
 def S_G(N,omega,t):
     '''
-    Returns the Von Neumann entropy approximation for linear OQW with given omega, N and t''' 
+    Returns the Von Neumann entropy approximation for linear OQW with given omega, N and t
+    ''' 
     v = 2*omega - 1
     part_one = np.log(2*pi*t)/(4*np.sqrt(2*pi)) * ( 1 + erf( (N-v*t)/(np.sqrt(2*t)) ) )
     part_two = -(1/(2*np.sqrt(2*pi))) * (N-v*t)/(np.sqrt(t)) * np.exp( -(N-v*t)**2/(2*t) )
@@ -83,6 +79,9 @@ def S_corrected(N,omega,t):
 
 
 def Prob(N,omega,t):
+    '''
+    Returns the probability distribution P[m, n] for linear OQW with given omega, N and t
+    '''
     # Compute P[m, n] recursively
     # Initialize P array
     P = np.zeros((N, t+1))
@@ -103,6 +102,8 @@ def Prob(N,omega,t):
 
 
 def Prob_approximation(N,omega,x,t):
+    '''
+    Returns the probability distribution approximation P(x, t) for linear OQW with given omega, N and t'''
     v = 2*omega - 1
     P = 0
     if x < N - 2*standart_deviation_energy(N,omega,1)*t:
@@ -117,6 +118,9 @@ def Prob_approximation(N,omega,x,t):
 
 
 def S_entropy(N,omega,t):
+    '''
+    Returns the entropy for linear OQW with given omega, N and t
+    '''
     prob_list = Prob(N,omega,t)
     S = 0
     for m in range(N):
@@ -125,14 +129,20 @@ def S_entropy(N,omega,t):
 
 
 def t_start(N,omega):
+    '''
+    Returns the starting time for steady state approximation for linear OQW with given omega and N
+    '''
     v = 2*omega - 1
     t_start = ( (np.sqrt(1+v*N)-1)/v )**2
     return t_start
 
 def t_end(N,omega):
+    '''
+    Returns the ending time for steady state approximation for linear OQW with given omega and N
+    '''
     v = 2*omega - 1
-    t_start = ( (np.sqrt(1+v*N)+1)/v )**2
-    return t_start
+    t_end = ( (np.sqrt(1+v*N)+1)/v )**2
+    return t_end
 
 
 def S_a_2(N,omega,t):
