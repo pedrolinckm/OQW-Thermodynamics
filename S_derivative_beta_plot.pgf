@@ -431,7 +431,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=3.587500in,y=0.262809in,,top]{\color{textcolor}{\sffamily\fontsize{13.000000}{15.600000}\selectfont\catcode`\^=\active\def^{\ifmmode\sp\else\^{}\fi}\catcode`\%=\active\def%{\%}$\beta$}}%
+\pgftext[x=3.587500in,y=0.262809in,,top]{\color{textcolor}{\sffamily\fontsize{10.000000}{12.000000}\selectfont\catcode`\^=\active\def^{\ifmmode\sp\else\^{}\fi}\catcode`\%=\active\def%{\%}$\beta$}}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfpathrectangle{\pgfqpoint{0.875000in}{0.550000in}}{\pgfqpoint{5.425000in}{3.850000in}}%
@@ -710,7 +710,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=0.437467in,y=2.475000in,,bottom,rotate=90.000000]{\color{textcolor}{\sffamily\fontsize{13.000000}{15.600000}\selectfont\catcode`\^=\active\def^{\ifmmode\sp\else\^{}\fi}\catcode`\%=\active\def%{\%}$\partial S / \partial \beta $}}%
+\pgftext[x=0.437467in,y=2.475000in,,bottom,rotate=90.000000]{\color{textcolor}{\sffamily\fontsize{10.000000}{12.000000}\selectfont\catcode`\^=\active\def^{\ifmmode\sp\else\^{}\fi}\catcode`\%=\active\def%{\%}$\partial S / \partial \beta $}}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfpathrectangle{\pgfqpoint{0.875000in}{0.550000in}}{\pgfqpoint{5.425000in}{3.850000in}}%
@@ -873,16 +873,16 @@
 \pgfsetstrokecolor{currentstroke}%
 \pgfsetstrokeopacity{0.800000}%
 \pgfsetdash{}{0pt}%
-\pgfpathmoveto{\pgfqpoint{6.101389in}{4.165278in}}%
-\pgfpathlineto{\pgfqpoint{6.173611in}{4.165278in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{6.209722in}{4.165278in}}{\pgfqpoint{6.209722in}{4.201389in}}%
-\pgfpathlineto{\pgfqpoint{6.209722in}{4.273611in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{6.209722in}{4.309722in}}{\pgfqpoint{6.173611in}{4.309722in}}%
-\pgfpathlineto{\pgfqpoint{6.101389in}{4.309722in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{6.065278in}{4.309722in}}{\pgfqpoint{6.065278in}{4.273611in}}%
-\pgfpathlineto{\pgfqpoint{6.065278in}{4.201389in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{6.065278in}{4.165278in}}{\pgfqpoint{6.101389in}{4.165278in}}%
-\pgfpathlineto{\pgfqpoint{6.101389in}{4.165278in}}%
+\pgfpathmoveto{\pgfqpoint{6.147222in}{4.219444in}}%
+\pgfpathlineto{\pgfqpoint{6.202778in}{4.219444in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{6.230556in}{4.219444in}}{\pgfqpoint{6.230556in}{4.247222in}}%
+\pgfpathlineto{\pgfqpoint{6.230556in}{4.302778in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{6.230556in}{4.330556in}}{\pgfqpoint{6.202778in}{4.330556in}}%
+\pgfpathlineto{\pgfqpoint{6.147222in}{4.330556in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{6.119444in}{4.330556in}}{\pgfqpoint{6.119444in}{4.302778in}}%
+\pgfpathlineto{\pgfqpoint{6.119444in}{4.247222in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{6.119444in}{4.219444in}}{\pgfqpoint{6.147222in}{4.219444in}}%
+\pgfpathlineto{\pgfqpoint{6.147222in}{4.219444in}}%
 \pgfpathclose%
 \pgfusepath{stroke,fill}%
 \end{pgfscope}%
