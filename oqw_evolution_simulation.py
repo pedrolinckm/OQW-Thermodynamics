@@ -6,8 +6,8 @@ from matplotlib import rc
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 import math
-#font_path = '/home/pedro-linck/Downloads/times.ttf'  # Update this path if necessary
-#font_prop = fm.FontProperties(fname=font_path)
+font_path = '/home/peu/Downloads/times.ttf'  # Update this path if necessary
+font_prop = fm.FontProperties(fname=font_path)
 
 #plt.rcParams['font.family'] = 'serif'
 
@@ -17,8 +17,8 @@ lambd = 1 - omega
 a = omega / lambd
 
 # Define N (size of graph) and Nmax (number of steps)
-N = 4   # Maximum value of m
-Nmax = 10  # Maximum value of n
+N = 100   # Maximum value of m
+Nmax = 400  # Maximum value of n
 
 # Initialize P array
 P = np.zeros((N, Nmax+1))
@@ -38,15 +38,15 @@ for n in range(1, Nmax+1):
 
 
 plt.figure(figsize=(10, 6))
-for n in range(0, Nmax+1, 2):
+for n in range(50, Nmax+1, 50):
     plt.plot(range(N), P[:, n], marker='o', label=f'n={n}')
-plt.xlabel('m', fontsize=18)
-plt.ylabel('P(m, n)', fontsize=18)
-plt.legend(fontsize = 15)
+plt.xlabel('m', fontsize=13, fontproperties=font_prop)
+plt.ylabel('P(m, n)', fontsize=13, fontproperties=font_prop)
+plt.legend(fontsize=13, title_fontproperties=font_prop)
 plt.grid(True)
 
 
-integer_ticks = range(0, N)
+integer_ticks = range(0, N, 20)
 
 plt.xticks(integer_ticks)
 
